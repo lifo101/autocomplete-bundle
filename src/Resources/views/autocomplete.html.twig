@@ -1,0 +1,20 @@
+{% block lifo_select2_widget %}
+    {%- if multiple -%}
+        {% set attr = attr|merge({'multiple': 'multiple'}) %}
+    {%- endif -%}
+    <select {{ block('widget_attributes') }} data-config="{{ config|json_encode|e('html_attr') }}">
+        {% if allow_clear or multiple or placeholder is not empty %}
+            <option value=""></option>
+        {% endif %}
+        {% for option in (multiple ? value : [value]) %}
+            {{ block('lifo_select2_widget_option') }}
+        {% endfor %}
+    </select>
+{% endblock %}
+
+{#
+render a single <option> for the select. The variable {option} contains [id,text,data] fields for the item
+#}
+{% block lifo_select2_widget_option %}
+    <option value="{{ option.id }}" selected="selected">{{ option.text }}</option>
+{% endblock %}

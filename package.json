@@ -1,0 +1,23 @@
+{
+  "name": "autocomplete-bundle",
+  "version": "1.0.0",
+  "repository": "https://github.com/lifo101/autocomplete-bundle.git",
+  "author": "Jason Morriss <lifo101@gmail.com>",
+  "license": "MIT",
+  "main": "src/Resources/public/js/dist/autocomplete.js",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0",
+    "eslint": "^7.32.0",
+    "webpack": "^4.46.0"
+  }
+}

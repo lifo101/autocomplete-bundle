@@ -1,0 +1,20 @@
+{
+    "name": "lifo/autocomplete-bundle",
+    "description": "Symfony Autocomplete Form Bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Lifo\\AutocompleteBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jason Morriss",
+            "email": "lifo101@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    }
+}
