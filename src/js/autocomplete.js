@@ -47,7 +47,7 @@ export function initSelect2(el, options = null) {
 }
 
 $.fn.lifoSelect2 = function(options) {
-    this.each((i, el) => initSelect2(el, options));
+    return this.each((i, el) => initSelect2(el, options));
 }
 
 $(() => $('.lifo-select2').lifoSelect2())
