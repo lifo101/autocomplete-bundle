@@ -12,8 +12,8 @@ function processResults(data) {
     return response;
 }
 
-export function initSelect2(el) {
-    const $el = $(el), cfg = $el.data('config');
+export function initSelect2(el, options = null) {
+    const $el = $(el), cfg = Object.assign({}, options ?? {}, $el.data('config'));
     if (!cfg) {
         console.error('No data-config attribute found for Select2 element', el);
         return;
@@ -46,6 +46,8 @@ export function initSelect2(el) {
     return $(el).select2(settings);
 }
 
-$(function() {
-    $('.lifo-select2').each((i, el) => initSelect2(el));
-})
+$.fn.lifoSelect2 = function(options) {
+    this.each((i, el) => initSelect2(el, options));
+}
+
+$(() => $('.lifo-select2').lifoSelect2())
