@@ -43,7 +43,11 @@ export function initSelect2(el, options = null) {
         settings.data = settings.data.map(r => ({text: r[cfg.text_property ?? 'text'] ?? '*unknown*', ...r}));
     }
 
-    return $(el).select2(settings);
+    $el.select2(settings);
+    if (cfg.submit_on_select) {
+        $el.on('select2:select select2:unselect', e => e.target.closest('form').submit())
+    }
+    return $el;
 }
 
 $.fn.lifoSelect2 = function(options) {

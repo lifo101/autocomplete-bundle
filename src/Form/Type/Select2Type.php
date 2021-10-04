@@ -98,9 +98,10 @@ class Select2Type extends AbstractType
             'dir'                    => $options['dir'],
             'debug'                  => $options['debug'],
 
-            'text_property' => $options['text_property'],
-            'tag_id_prefix' => $options['tag_id_prefix'],
-            'tag_prefix'    => $options['tag_prefix'],
+            'text_property'    => $options['text_property'],
+            'tag_id_prefix'    => $options['tag_id_prefix'],
+            'tag_prefix'       => $options['tag_prefix'],
+            'submit_on_select' => $options['submit_on_select'],
         ];
 
         // define source of data: AJAX from a local route, a third-party URL, or an array of choices
@@ -163,6 +164,7 @@ class Select2Type extends AbstractType
             'dropdown_parent'     => null,
             'allow_clear'         => true,
             'close_on_select'     => true,
+            'submit_on_select'    => false,
             'dropdown_auto_width' => false,
             'placeholder'         => null,
             'transformer'         => null,
