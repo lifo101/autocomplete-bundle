@@ -1,23 +1,34 @@
 import $ from 'jquery';
 
-function processResults(data) {
-    const response = {results: [], pagination: {more: false}};
-    if (Array.isArray(data)) {
-        response.results = data;
-    } else {
-        response.results         = data?.results ?? [];
-        // BC: allow 'more' to be 'data.more' or 'data.pagination.more'
-        response.pagination.more = data?.pagination?.more ?? data?.more ?? false;
-    }
-    return response;
-}
-
 export function initSelect2(el, options = null) {
     const $el = $(el), cfg = Object.assign({}, options ?? {}, $el.data('config'));
     if (!cfg) {
         console.error('No data-config attribute found for Select2 element', el);
         return;
     }
+
+    // map the text property to 'text' for Select2
+    const mapResults = function (ary) {
+        // fallback to r.id if r[text_property] doesn't exist
+        return Array.isArray(ary) && cfg.text_property && cfg.text_property !== 'text'
+            ? ary.map(r => r.hasOwnProperty('text') ? r : {text: r[cfg.text_property] ?? r.id, ...r})
+            : ary;
+    }
+
+    const processResults = function (data) {
+        const response = {results: [], pagination: {more: false}};
+        if (Array.isArray(data)) {
+            response.results = data;
+        } else {
+            response.results         = data?.results ?? [];
+            // BC: allow 'more' to be 'data.more' or 'data.pagination.more'
+            response.pagination.more = data?.pagination?.more ?? data?.more ?? false;
+        }
+
+        response.results = mapResults(response.results);
+        return response;
+    }
+
 
     const createTag = function ({term}) {
         term = $.trim(term);
@@ -39,8 +50,7 @@ export function initSelect2(el, options = null) {
         if (typeof settings.data === 'object' && !Array.isArray(settings.data)) {
             settings.data = Object.entries(settings.data).map(d => ({id: d[1], text: d[0]}))
         }
-        // make sure 'text' field is present
-        settings.data = settings.data.map(r => ({text: r[cfg.text_property ?? 'text'] ?? '*unknown*', ...r}));
+        settings.data = mapResults(settings.data);
     }
 
     $el.select2(settings);
@@ -50,7 +60,7 @@ export function initSelect2(el, options = null) {
     return $el;
 }
 
-$.fn.lifoSelect2 = function(options) {
+$.fn.lifoSelect2 = function (options) {
     return this.each((i, el) => initSelect2(el, options));
 }
 
