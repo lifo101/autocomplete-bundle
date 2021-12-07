@@ -95,6 +95,7 @@ class Select2Type extends AbstractType
             'tags'                   => $options['tags'],
             'language'               => $options['language'],
             'disabled'               => $options['disabled'],
+            'width'                  => $options['width'],
             'dir'                    => $options['dir'],
             'debug'                  => $options['debug'],
 
@@ -148,6 +149,7 @@ class Select2Type extends AbstractType
             'min_input_length'    => 0,
             'max_selections'      => 0,
             'delay'               => 250,
+            'width'               => '100%',
             'choices'             => null,
             'url'                 => null,
             'route'               => null,
