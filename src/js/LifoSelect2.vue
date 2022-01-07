@@ -53,11 +53,10 @@ export default {
             .on('select2:unselect select2:select', function (e, args) {
                 // relay events [select,unselect] to parent; sending the actual selected objects or null
                 const data  = cloneDeep($(this).select2('data'));
-                const value = vm.fromSelect2Data(data.length === 0 ? null : vm.multiple ? data : data[0]);
+                const value = vm.fromSelect2Data(data.length === 0 ? null : vm.cfg.multiple ? data : data[0]);
                 vm.$emit(e.type.substr(e.type.indexOf(':') + 1), e, value);
                 if (!(args && 'ignore' in args)) {
-                    // vm.$emit('input', vm.multiple ? $(this).find(':selected').get().map(o => o.value) : e.target.value);
-                    vm.$emit('input', value);
+                    vm.$emit('input', vm.cfg.multiple ? data : data[0]);
                 }
             })
             .on('change', function (e, args) {
@@ -87,15 +86,18 @@ export default {
             const $el = $(this.$el);
             if (typeof value === 'object' && value !== null) {
                 if (Array.isArray(value)) {
-                    $el.append(value.map(v => new Option(v[this.textProperty], v.id, true, true)));
+                    value.forEach(v => this.update(v));
                 } else {
-                    $el.append(new Option(value[this.textProperty], value.id, true, true));
+                    !this.exists(value) && $el.append(new Option(value[this.textProperty] ?? value.id, value.id, true, true));
                 }
             } else {
-                $(this.$el).val(value);
+                !this.exists(value) && $(this.$el).val(value);
             }
             $el.trigger('change', {ignore: true});
-            // $el.trigger({type: 'select2:select', params: {data: value}});
+        },
+        exists(value) {
+            const data = $(this.$el).data('select2').data();
+            return data.some(o => o === value || o?.[this.textProperty] && o[this.textProperty] === value[this.textProperty]);
         },
         fromSelect2Data(data) {
             if (data === null) return null;
