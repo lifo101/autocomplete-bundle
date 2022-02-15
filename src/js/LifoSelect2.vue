@@ -6,6 +6,7 @@ import merge from 'lodash/merge'
 import {cloneDeep} from 'lodash/lang';
 
 export default {
+    inheritAttrs: false,
     props: {
         value: {default: null},
         // provide all props in a single config object
@@ -169,7 +170,7 @@ export default {
 </script>
 
 <template>
-    <select class="form-control" style="width:100%">
+    <select style="width:100%">
         <slot>
             <!--
             need an empty option if tagging is enabled to work-around a bug where the first tag entered  does not fire
