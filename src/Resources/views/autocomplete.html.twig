@@ -10,6 +10,7 @@
             {{ block('lifo_select2_widget_option') }}
         {% endfor %}
     </select>
+    {{- form_errors(form) -}}
 {% endblock %}
 
 {#
