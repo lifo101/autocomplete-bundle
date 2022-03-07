@@ -10,7 +10,7 @@
             {{ block('lifo_select2_widget_option') }}
         {% endfor %}
     </select>
-    {{- form_errors(form) -}}
+    {% if error_target is not defined or error_target != 'label' %}{{ form_errors(form) }}{% endif %}
 {% endblock %}
 
 {#
