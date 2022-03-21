@@ -13,6 +13,7 @@ export default {
         config: {type: Object, default: () => ({})},
         // or provide each option individually
         data: {type: Array, default: () => []},
+        name: {type: String, default: null},
         url: {type: String, default: null},
         cache: {type: Boolean, default: true},
         cacheTimeout: {type: Number, default: 60000},
@@ -170,7 +171,7 @@ export default {
 </script>
 
 <template>
-    <select style="width:100%">
+    <select style="width:100%" :name="name">
         <slot>
             <!--
             need an empty option if tagging is enabled to work-around a bug where the first tag entered  does not fire
