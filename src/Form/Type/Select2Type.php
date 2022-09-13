@@ -98,6 +98,7 @@ class Select2Type extends AbstractType
             'width'                  => $options['width'],
             'dir'                    => $options['dir'],
             'debug'                  => $options['debug'],
+            'term_param'             => $options['term_param'],
 
             'text_property'    => $options['text_property'],
             'tag_id_prefix'    => $options['tag_id_prefix'],
@@ -152,6 +153,7 @@ class Select2Type extends AbstractType
             'width'               => '100%',
             'choices'             => null,
             'url'                 => null,
+            'term_param'          => null, // override '?term=' param name for ajax calls
             'route'               => null,
             'route_params'        => null,
             'tags'                => false,

@@ -19,6 +19,9 @@ export function initSelect2(el, options = null) {
         const response = {results: [], pagination: {more: false}};
         if (Array.isArray(data)) {
             response.results = data;
+        } else if (typeof data === 'object' && 'hydra:member' in data) {
+            response.results = data['hydra:member'];
+            response.pagination.more = !!data['hydra:view']?.['hydra:next'];
         } else {
             response.results         = data?.results ?? [];
             // BC: allow 'more' to be 'data.more' or 'data.pagination.more'
@@ -43,6 +46,14 @@ export function initSelect2(el, options = null) {
 
     if (settings.hasOwnProperty('ajax') && settings.ajax !== null) {
         Object.assign(settings.ajax, {processResults})
+        // override ?term ajax parameter
+        if (!!cfg.term_param) {
+            settings.ajax.data = function(params) {
+                const p = {...params, [cfg.term_param]: params.term};
+                delete p.term;
+                return p;
+            }
+        }
     }
 
     if (settings.hasOwnProperty('data') && settings.data !== null) {
