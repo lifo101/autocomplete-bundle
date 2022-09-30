@@ -51,11 +51,9 @@ class Select2Type extends AbstractType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        if (!isset($view->vars['attr']['class'])) {
-            $view->vars['attr']['class'] = '';
-        }
-        $view->vars['attr']['class'] = 'lifo-select2 ' . $view->vars['attr']['class'];
-        if ($options['theme'] === 'bootstrap') {
+        $view->vars['attr']['class'] ??= '';
+        $view->vars['attr']['class'] = trim('lifo-select2 ' . $view->vars['attr']['class']);
+        if (strpos($options['theme'], 'bootstrap') !== false) {
             $view->vars['attr']['class'] .= ' form-control';
         }
 
