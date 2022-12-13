@@ -15,6 +15,7 @@ export default {
         data: {type: Array, default: () => []},
         name: {type: String, default: null},
         url: {type: String, default: null},
+        termParam: {type: String, default: null},
         cache: {type: Boolean, default: true},
         cacheTimeout: {type: Number, default: 60000},
         delay: {type: Number, default: 250},
@@ -90,7 +91,7 @@ export default {
                 if (Array.isArray(value)) {
                     value.forEach(v => this.update(v));
                 } else {
-                    !this.exists(value) && $el.append(new Option(value[this.textProperty] ?? value.id, value.id, true, true));
+                    !this.exists(value) && $el.append(new Option(value[this.cfg.text_property] ?? value.id, value.id, true, true));
                 }
             } else {
                 !this.exists(value) && $(this.$el).val(value);
@@ -99,7 +100,7 @@ export default {
         },
         exists(value) {
             const data = $(this.$el).data('select2').data();
-            return data.some(o => o === value || o?.[this.textProperty] && o[this.textProperty] === value[this.textProperty]);
+            return data.some(o => o === value || o?.[this.cfg.text_property] && o[this.cfg.text_property] === value?.[this.cfg.text_property]);
         },
         fromSelect2Data(data) {
             if (data === null) return null;
@@ -110,12 +111,42 @@ export default {
             delete data.selected;
             delete data.disabled;
             delete data.element;
-            if (this.textProperty !== 'text') {
+            if (this.cfg.text_property !== 'text') {
                 delete data.text;
             }
 
             return data;
         },
+        mapResults(ary) {
+            // fallback to r.id if r[text_property] doesn't exist
+            return Array.isArray(ary) && this.cfg.text_property && this.cfg.text_property !== 'text'
+                ? ary.map(r => r.hasOwnProperty('text') ? r : {text: r[this.cfg.text_property] ?? r.id, ...r})
+                : ary;
+        },
+        processResults(data) {
+            const response = {results: [], pagination: {more: false}};
+            if (Array.isArray(data)) {
+                response.results = data;
+            } else if (typeof data === 'object' && 'hydra:member' in data) {
+                response.results = data['hydra:member'];
+                response.pagination.more = !!data['hydra:view']?.['hydra:next'];
+            } else {
+                response.results         = data?.results ?? [];
+                // BC: allow 'more' to be 'data.more' or 'data.pagination.more'
+                response.pagination.more = data?.pagination?.more ?? data?.more ?? false;
+            }
+
+            response.results = this.mapResults(response.results);
+            return response;
+        },
+        createTag({term}) {
+            term = $.trim(term);
+            return term === '' ? null : {
+                id: (this.cfg.tag_id_prefix ?? '') + term,
+                text: (this.cfg.tag_prefix ?? '') + term,
+                tag: true, // not useful yet
+            };
+        }
     },
     computed: {
         localValue() {
@@ -127,7 +158,7 @@ export default {
             return this.value;
         },
         cfg() {
-            return merge({
+            let cfg = merge({
                 data: this.data ? this.data.map(d => cloneDeep(d)) : null,
                 multiple: this.multiple,
                 theme: this.theme,
@@ -146,15 +177,29 @@ export default {
                 text_property: this.textProperty,
                 tag_id_prefix: this.tagIdPrefix,
                 tag_prefix: this.tagPrefix,
+                createTag: (t) => this.createTag(t),
                 submit_on_select: this.submitOnSelect,
                 dropdownParent: this.dropdownParent ? $(this.dropdownParent) : null,
-                ajax: this.url ? {
-                    url: this.url,
-                    delay: this.delay,
-                    cache: this.cache,
-                    cacheTimeout: this.cacheTimeout,
-                } : null,
             }, this.config);
+
+            const url = this.url ?? cfg.url ?? null;
+            if (!!url) {
+                const termParam = cfg.termParam ?? this.termParam ?? null;
+                cfg.ajax = merge(cfg?.ajax ?? {}, {
+                    url: url,
+                    delay: cfg.delay ?? this.delay,
+                    cache: cfg.cache ?? this.cache,
+                    cacheTimeout: cfg.cacheTimeout ?? this.cacheTimeout,
+                    processResults: (data) => this.processResults(data),
+                    data: termParam ? (params) => {
+                        const p = {...params, [termParam]: params.term};
+                        delete p.term;
+                        return p;
+                    } : null
+                });
+            }
+
+            return cfg;
         }
     },
     watch: {

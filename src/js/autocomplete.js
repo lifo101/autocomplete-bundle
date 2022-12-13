@@ -44,7 +44,7 @@ export function initSelect2(el, options = null) {
 
     const settings = Object.assign({}, cfg, {createTag});
 
-    if (settings.hasOwnProperty('ajax') && settings.ajax !== null) {
+    if (settings.hasOwnProperty('ajax') && settings.ajax !== null && !!!settings.ajax.processResults) {
         Object.assign(settings.ajax, {processResults})
         // override ?term ajax parameter
         if (!!cfg.term_param) {
