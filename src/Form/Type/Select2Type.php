@@ -98,6 +98,7 @@ class Select2Type extends AbstractType
             'debug'                  => $options['debug'],
             'term_param'             => $options['term_param'],
 
+            'property'         => $options['property'],
             'text_property'    => $options['text_property'],
             'tag_id_prefix'    => $options['tag_id_prefix'],
             'tag_prefix'       => $options['tag_prefix'],

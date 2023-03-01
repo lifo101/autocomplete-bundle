@@ -10,9 +10,12 @@ export function initSelect2(el, options = null) {
     // map the text property to 'text' for Select2
     const mapResults = function (ary) {
         // fallback to r.id if r[text_property] doesn't exist
-        return Array.isArray(ary) && cfg.text_property && cfg.text_property !== 'text'
+        let list = Array.isArray(ary) && cfg.text_property && cfg.text_property !== 'text'
             ? ary.map(r => r.hasOwnProperty('text') ? r : {text: r[cfg.text_property] ?? r.id, ...r})
             : ary;
+        // map the 'id' if it doesn't exist, or Select2 will not let you select anything
+        if (cfg.property !== 'id') list = list.map(r => ({...r, id: r?.[cfg.property] ?? r?.id ?? null}));
+        return list;
     }
 
     const processResults = function (data) {
