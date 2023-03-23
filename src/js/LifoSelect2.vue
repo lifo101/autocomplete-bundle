@@ -31,6 +31,7 @@ export default {
         allowClear: {type: Boolean, default: true},
         language: {type: String, default: 'en'},
         textProperty: {type: String, default: 'text'},
+        property: {type: String, default: 'id'},
         minimumInputLength: {type: [Number, String], default: 1},
         maximumSelectionLength: {type: [Number, String], default: 0},
         closeOnSelect: {type: Boolean, default: true},
@@ -123,7 +124,7 @@ export default {
                 ? ary.map(r => r.hasOwnProperty('text') ? r : {text: r[this.cfg.text_property] ?? r.id, ...r})
                 : ary;
             // map the 'id' if it doesn't exist, or Select2 will not let you select anything
-            if (cfg.property !== 'id') list = list.map(r => ({...r, id: r?.[cfg.property] ?? r?.id ?? null}));
+            if (this.cfg.property !== 'id') list = list.map(r => ({...r, id: r?.[this.cfg.property] ?? r?.id ?? null}));
             return list;
         },
         processResults(data) {
@@ -177,6 +178,7 @@ export default {
                 disabled: this.disabled,
                 scroll: this.scroll,
                 dir: this.dir,
+                property: this.property,
                 text_property: this.textProperty,
                 tag_id_prefix: this.tagIdPrefix,
                 tag_prefix: this.tagPrefix,
