@@ -6,3 +6,6 @@ services:
   Lifo\AutocompleteBundle\Form\Type\Select2Type:
     tags: [ { name: form.type } ]
 
+  Lifo\AutocompleteBundle\Form\Type\MultiselectType:
+    tags: [ { name: form.type } ]
+

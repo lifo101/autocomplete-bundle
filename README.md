@@ -18,10 +18,12 @@ replacement, but rather a more modern approach to doing things.
 * Easily add the javascript code to your existing bundler _(webpack, etc)_, or use it directly via a `<script>` tag.
 * Support different themes like `bootstrap`.
 * Supports `tagging` - The ability of adding new entities or items.
+* Form types for `Select` and `Vue-Multiselect` widgets. Vue-Multiselect type is not documented yet.
 
 ### Requirements
 
-* This bundle requires the `Select2` javascript and CSS code, but does not provide it directly. You must include it yourself, 
+* This bundle requires the [Select2](https://select2.org/) or [Vue-multiselect](https://vue-multiselect.js.org/)
+javascript and CSS code, but does not provide it directly. You must include it yourself, 
 eg: `yarn add select2`, and add it to your webpack or other bundler configuration.
 
 * `Select2` requires [jQuery](https://jquery.com/) and is not actually provided in this bundle. 
@@ -106,7 +108,7 @@ Option|Default|Description
 
 ## Installation
 
-### Symfony v4+
+### Symfony v4+, v5+, v6+
 
 `composer require lifo/autocomplete-bundle`
 

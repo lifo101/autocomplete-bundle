@@ -9,7 +9,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-class Select2ValueTransformer implements DataTransformerInterface
+class MultiselectValueTransformer implements DataTransformerInterface
 {
     protected ?EntityManagerInterface $em;
     protected PropertyAccessor        $accessor;
@@ -45,38 +45,40 @@ class Select2ValueTransformer implements DataTransformerInterface
      */
     public function transform($value)
     {
-        if ($value === '' || $value === null) {
-            return null;
-        }
-
-        // return the value as-is if its from a plain 'choices' list and not an Entity
-        if ($this->choices && is_array($value) && array_search($value, $this->choices, true) !== false) {
-            return $value;
-        }
-
-        try {
-            if (is_scalar($value)) {
-                $id = $value;
-            } else {
-                $id = $this->accessor->getValue($value, $this->property);
-            }
-
-            if (is_callable($this->textProperty)) {
-                $text = ($this->textProperty)($value);
-            } elseif (is_scalar($value)) {
-                $text = $value;
-            } elseif ($this->textProperty !== null) {
-                $text = $this->accessor->getValue($value, $this->textProperty);
-            } elseif (is_object($value) && method_exists($value, '__toString')) {
-                $text = (string)$value;
-            } else {
-                throw new Exception('Unable to determine Text field for entity. Did you set the "text_property" field correctly?');
-            }
-        } catch (Exception $e) {
-            throw new TransformationFailedException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        return (object)['id' => $id, 'text' => $text, 'data' => $value];
+        // return as-is
+        return $value;
+//        if ($value === '' || $value === null) {
+//            return null;
+//        }
+//
+//        // return the value as-is if its from a plain 'choices' list and not an Entity
+//        if ($this->choices && is_array($value) && array_search($value, $this->choices, true) !== false) {
+//            return $value;
+//        }
+//
+//        try {
+//            if (is_scalar($value)) {
+//                $id = $value;
+//            } else {
+//                $id = $this->accessor->getValue($value, $this->property);
+//            }
+//
+//            if (is_callable($this->textProperty)) {
+//                $text = ($this->textProperty)($value);
+//            } elseif (is_scalar($value)) {
+//                $text = $value;
+//            } elseif ($this->textProperty !== null) {
+//                $text = $this->accessor->getValue($value, $this->textProperty);
+//            } elseif (is_object($value) && method_exists($value, '__toString')) {
+//                $text = (string)$value;
+//            } else {
+//                throw new Exception('Unable to determine Text field for entity. Did you set the "text_property" field correctly?');
+//            }
+//        } catch (Exception $e) {
+//            throw new TransformationFailedException($e->getMessage(), $e->getCode(), $e);
+//        }
+//
+//        return (object)['id' => $id, 'text' => $text, 'data' => $value];
     }
 
     /**
@@ -108,16 +110,9 @@ class Select2ValueTransformer implements DataTransformerInterface
                 }
             }
 
-            $repo = $this->em->getRepository($this->class);
-            if (!empty($this->property)) {
-                return $repo->findOneBy(array($this->property => $value));
-            } else {
-                return $repo->find($value);
-            }
+            return $this->em->getRepository($this->class)->findOneBy([$this->property => $value]);
         } elseif ($this->choices) {
-            $found = array_filter($this->choices, function ($c) use ($value) {
-                return $c == $value || @$c['id'] == $value;
-            });
+            $found = array_filter($this->choices, fn($c) => $c == $value || ($c[$this->property ?? 'id'] ?? $this) == $value);
             return $found ? reset($found) : null;
         }
 
