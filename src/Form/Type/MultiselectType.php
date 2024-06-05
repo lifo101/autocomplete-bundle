@@ -57,6 +57,7 @@ class MultiselectType extends AbstractType
         // for mock-up skeleton only
         $view->vars['size'] = $options['size'];
         $view->vars['skeleton'] = $options['skeleton'];
+        $view->vars['vueVersion'] = $options['vueVersion'];
 
         if ($options['multiple']) {
             $view->vars['full_name'] .= '[]';
@@ -83,8 +84,9 @@ class MultiselectType extends AbstractType
     {
         // the 'var' and ':var' pairs are needed for the searchBuilder since it doesn't render the ':var' properly
         $cfg = array_merge($options['attr'] ?? [], [
-            'class'                => 'lifo-vue-multiselect',
-            'is'                   => 'multiselect-ajax',
+            'class'                => $options['vueVersion'] < 3 ? 'lifo-vue-multiselect' : null,
+            'is'                   => $options['vueVersion'] < 3 ? 'multiselect-ajax' : null,
+            ':vue-version'         => $options['vueVersion'],
             'minimum-input-length' => $options['min_input_length'],
             'required'             => $options['required'] ? '' : null,
             ':required'            => $options['required'] ? 'true' : 'false',
@@ -102,7 +104,8 @@ class MultiselectType extends AbstractType
             'internal-search'      => $options['internal_search'] ?? false ? '' : null,
             ':internal-search'     => $options['internal_search'] ?? false ? 'true' : 'false',
             'url'                  => $options['route'] ? $this->router->generate($options['route'], $options['route_params'] ?? []) : $options['url'] ?? null,
-            ':value'               => $form->vars['data'] === null ? 'null' : $this->serializer->serialize($form->vars['data'], $options['serializerFormat'], $options['serializerContext'] ?? []),
+            $options['vueVersion'] < 3 ? ':value' : ':model-value'
+                                   => $form->vars['data'] === null ? 'null' : $this->serializer->serialize($form->vars['data'], $options['serializerFormat'], $options['serializerContext'] ?? []),
         ]);
         return array_filter($cfg, fn($v) => $v !== null);
     }
@@ -160,6 +163,7 @@ class MultiselectType extends AbstractType
             'compound'            => false,
             'serializerFormat'    => 'json',
             'serializerContext'   => [],
+            'vueVersion'          => 2,
         ]);
         $resolver->setNormalizer('em', $emNormalizer);
         $resolver->setNormalizer('placeholder', fn(Options $options, $value) => $value ?? ''); // no null
@@ -172,6 +176,7 @@ class MultiselectType extends AbstractType
         $resolver->addAllowedTypes('text_property', ['null', 'string', 'callable']);
         $resolver->addAllowedTypes('serializerFormat', ['string']);
         $resolver->addAllowedTypes('serializerContext', ['null', 'array']);
+        $resolver->addAllowedTypes('vueVersion', ['string', 'numeric']);
     }
 
     public function getBlockPrefix(): string

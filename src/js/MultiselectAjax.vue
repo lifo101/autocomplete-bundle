@@ -1,9 +1,6 @@
 <script>
-import Vue from 'vue'
 import Multiselect from 'vue-multiselect';
 import {ObserveVisibility} from 'vue-observe-visibility'
-
-Vue.directive('observe-visibility', ObserveVisibility);
 
 function debounce(func, timeout = 250) {
     let timer;
@@ -19,10 +16,14 @@ let NEXT_IDX = -1;
 
 export default {
     name: "MultiselectAjax",
+    compatConfig: {MODE:3},
     components: {Multiselect},
+    directives: {ObserveVisibility},
     inheritAttrs: false,
     props: {
         value: {},
+        modelValue: {},
+        vueVersion: {default: null},
         url: {type: String, required: true},
         trackBy: {type: String, default: 'id'},
         label: {type: String, default: 'name'},
@@ -44,6 +45,8 @@ export default {
     },
     data() {
         return {
+            ready: false,
+            version: null,
             loading: false,
             response: null,
             view: null,
@@ -54,26 +57,32 @@ export default {
             abortController: null,
             opened: false,
             tags: [],
-            localValue: null, // instead of value prop
+            localValue: null,
         }
     },
     created() {
-        const vm             = this;
+        const vm = this;
         this.delayedOnChange = debounce(query => {
             this.page  = 1;
             this.pages = [];
             vm.onChange(query);
         }, this.delay);
 
-        this.localValue = JSON.parse(JSON.stringify(this.value));
+        // this.localValue = JSON.parse(JSON.stringify((this.version < 3 ? this.value : this.modelValue) ?? null));
     },
     methods: {
+        emit(event, ...args) {
+            this.$emit(event, ...args)
+            if (args.length === 1 && Array.isArray(args[0])) args = args[0]
+            // dispatch event so non-vuejs code can react
+            this.$refs?.multiselect?.$el?.dispatchEvent(new CustomEvent(event, {bubbles: true, detail: args}))
+        },
         onOpen(...args) {
             if (!this.opened && this.minInputLength <= 0) {
                 this.opened = true;
                 this.onChange('');
             }
-            this.$emit('open', ...args);
+            this.emit('open', ...args);
         },
         onChange(query) {
             if (query.length < this.minInputLength) {
@@ -106,7 +115,7 @@ export default {
         },
         onTag(name) {
             const tag = {[this.label]: name, [this.trackBy]: NEXT_IDX--};
-            this.$emit('add-tag', tag);
+            this.emit('add-tag', tag);
             this.tags ??= [];
             this.tags.push(tag);
             if (this.multiple) {
@@ -116,14 +125,14 @@ export default {
             }
         },
         onRemove(opt, id) {
-            this.$emit('remove', opt, id);
+            this.emit('remove', opt, id);
             if (!!this.tags) {
                 this.tags = this.tags.filter(t => t[this.trackBy] !== opt[this.trackBy]);
                 if (this.tags.length === 0) this.tags = null;
             }
         },
         onSelect(opt, id) { // won't trigger for non-tags
-            this.$emit('select', opt, id);
+            this.emit('select', opt, id);
             // clear any internal tags if we're not allowing multiple options
             if (!this.multiple && !!this.tags) {
                 this.tags = null;
@@ -146,13 +155,17 @@ export default {
             }
         },
         activate() {
-            this.$refs.multiselect.activate();
+            this.$refs?.multiselect.activate();
         },
         deactivate() {
-            this.$refs.multiselect.deactivate();
+            this.$refs?.multiselect.deactivate();
         },
         getValue(v) {
             return v?.[this.trackBy] ?? '';
+        },
+        updateValue(v) {
+            if (v === null) this.localValue = null;
+            this.localValue = JSON.parse(JSON.stringify(v));
         }
     },
     computed: {
@@ -180,12 +193,45 @@ export default {
         classes() {
             return !!this.size && this.size !== '' ? `multiselect-${this.size}` : null;
         }
+    },
+    watch: {
+        vueVersion: {
+            immediate: true,
+            handler(version) {
+                try {
+                    if (version === null) {
+                        const vm = this;
+                        import('vue')
+                            .then((vue) => {
+                                vm.version = parseFloat(('version' in vue ? vue.version : vue.default.version) ?? '2');
+                            })
+                            .finally(() => {
+                                vm.ready = true
+                            })
+                    } else {
+                        this.ready = true;
+                        this.version = parseFloat(version);
+                    }
+                } catch {
+                }
+            }
+        },
+        version: {
+            immediate: true,
+            handler(version) {
+                if (version === null) {
+                    this.updateValue(this.modelValue ?? this.value ?? null);
+                } else {
+                    this.updateValue((version < 3 ? this.value : this.modelValue) ?? null);
+                }
+            }
+        }
     }
 }
 </script>
 
 <template>
-    <div>
+    <div v-if="ready">
         <multiselect ref="multiselect"
                      v-bind="$attrs"
                      v-model="localValue"
@@ -200,7 +246,7 @@ export default {
                      :preserve-search="preserveSearch"
                      :show-labels="showLabels"
                      :class="classes"
-                     @input="$emit('input', $event)"
+                     @input="emit(version < 3 ? 'input' : 'update:modelValue', $event)"
                      @tag="onTag"
                      @remove="onRemove"
                      @open="onOpen"
@@ -226,12 +272,13 @@ export default {
                 <div v-observe-visibility="reachedEndOfList" v-if="hasMore"/>
             </template>
             <!-- Pass down slots from parent -->
-            <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
+            <template v-for="(_, slot) in (version < 3 ? $scopedSlots : $slots)" #[slot]="props">
                 <slot :name="slot" v-bind="props"/>
             </template>
         </multiselect>
         <template v-if="formName">
-            <input v-for="v in multiple ? localValue : [localValue]" type="hidden" :value="getValue(v)" :name="formName"/>
+            <input v-for="v in multiple ? localValue : [localValue]" type="hidden" :value="getValue(v)"
+                   :name="formName"/>
         </template>
     </div>
 </template>
