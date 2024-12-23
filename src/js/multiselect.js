@@ -1,6 +1,6 @@
-import Vue from 'vue';
+import {createApp} from 'vue';
 import MultiselectAjax from './MultiselectAjax.vue';
 
 Array.from(document.getElementsByClassName('lifo-vue-multiselect')).forEach(el => {
-    new Vue({el, components: {MultiselectAjax}})
+    createApp({components: {MultiselectAjax}}).mount(el);
 })
