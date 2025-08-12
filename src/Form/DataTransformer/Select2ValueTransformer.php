@@ -115,7 +115,7 @@ class Select2ValueTransformer implements DataTransformerInterface
                 return $repo->find($value);
             }
         } elseif ($this->choices) {
-            $found = array_filter($this->choices, function ($c) use ($value) {
+            $found = array_filter($this->choices, function (array $c) use ($value) {
                 return $c == $value || @$c['id'] == $value;
             });
             return $found ? reset($found) : null;

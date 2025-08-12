@@ -32,7 +32,7 @@ class MultiselectType extends AbstractType
         $this->serializer = $serializer;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($options['transformer']) {
             $transformer = is_callable($options['transformer']) ? $options['transformer']($options) : $options['transformer'];
@@ -51,7 +51,7 @@ class MultiselectType extends AbstractType
         }
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['config'] = $this->buildConfig($options, $view);
         // for mock-up skeleton only
@@ -110,7 +110,7 @@ class MultiselectType extends AbstractType
         return array_filter($cfg, fn($v) => $v !== null);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $emNormalizer = function (Options $options, $value) {
             return is_callable($value) ? $value($options) : $value;

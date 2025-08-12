@@ -132,7 +132,7 @@ export default {
             if (Array.isArray(data)) {
                 response.results = data;
             } else if (typeof data === 'object' && 'hydra:member' in data) {
-                response.results = data['hydra:member'];
+                response.results         = data['hydra:member'];
                 response.pagination.more = !!data['hydra:view']?.['hydra:next'];
             } else {
                 response.results         = data?.results ?? [];
@@ -190,7 +190,7 @@ export default {
             const url = this.url ?? cfg.url ?? null;
             if (!!url) {
                 const termParam = cfg.termParam ?? this.termParam ?? null;
-                cfg.ajax = merge(cfg?.ajax ?? {}, {
+                cfg.ajax        = merge(cfg?.ajax ?? {}, {
                     url: url,
                     delay: cfg.delay ?? this.delay,
                     cache: cfg.cache ?? this.cache,

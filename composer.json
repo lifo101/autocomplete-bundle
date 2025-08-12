@@ -14,7 +14,5 @@
             "email": "lifo101@gmail.com"
         }
     ],
-    "require": {
-        "php": ">=7.4"
-    }
+    "require": {}
 }

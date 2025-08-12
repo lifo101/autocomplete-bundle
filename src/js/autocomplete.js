@@ -23,7 +23,7 @@ export function initSelect2(el, options = null) {
         if (Array.isArray(data)) {
             response.results = data;
         } else if (typeof data === 'object' && 'hydra:member' in data) {
-            response.results = data['hydra:member'];
+            response.results         = data['hydra:member'];
             response.pagination.more = !!data['hydra:view']?.['hydra:next'];
         } else {
             response.results         = data?.results ?? [];
@@ -51,7 +51,7 @@ export function initSelect2(el, options = null) {
         Object.assign(settings.ajax, {processResults})
         // override ?term ajax parameter
         if (!!cfg.term_param) {
-            settings.ajax.data = function(params) {
+            settings.ajax.data = function (params) {
                 const p = {...params, [cfg.term_param]: params.term};
                 delete p.term;
                 return p;

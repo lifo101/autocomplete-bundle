@@ -3,9 +3,7 @@
 namespace Lifo\AutocompleteBundle\Form\DataTransformer;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 

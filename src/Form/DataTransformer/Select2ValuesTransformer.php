@@ -3,13 +3,14 @@
 namespace Lifo\AutocompleteBundle\Form\DataTransformer;
 
 use Doctrine\Common\Collections\Collection;
-use Exception;
-use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 class Select2ValuesTransformer extends Select2ValueTransformer
 {
-    public function transform($array)
+    /**
+     * @return mixed[]
+     */
+    public function transform($array): array
     {
         if (!$array) {
             return [];
@@ -34,7 +35,10 @@ class Select2ValuesTransformer extends Select2ValueTransformer
     }
 
 
-    public function reverseTransform($array)
+    /**
+     * @return mixed[]
+     */
+    public function reverseTransform($array): array
     {
         if (!$array) {
             return [];

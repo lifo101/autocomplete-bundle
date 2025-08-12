@@ -7,7 +7,7 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 class MultiselectValuesTransformer extends MultiselectValueTransformer
 {
-    public function transform($array)
+    public function transform($array): array
     {
         if (!$array) {
             return [];
@@ -32,7 +32,7 @@ class MultiselectValuesTransformer extends MultiselectValueTransformer
     }
 
 
-    public function reverseTransform($array)
+    public function reverseTransform($array): array
     {
         if (!$array) {
             return [];

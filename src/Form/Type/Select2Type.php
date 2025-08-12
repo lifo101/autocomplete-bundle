@@ -30,7 +30,7 @@ class Select2Type extends AbstractType
         $this->registry = $registry;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($options['transformer']) {
             $transformer = is_callable($options['transformer']) ? $options['transformer']($options) : $options['transformer'];
@@ -49,11 +49,11 @@ class Select2Type extends AbstractType
         }
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['attr']['class'] ??= '';
         $view->vars['attr']['class'] = trim('lifo-select2 ' . $view->vars['attr']['class']);
-        if (strpos($options['theme'], 'bootstrap') !== false) {
+        if (str_contains($options['theme'], 'bootstrap')) {
             $view->vars['attr']['class'] .= ' form-control';
         }
 
@@ -125,7 +125,7 @@ class Select2Type extends AbstractType
     }
 
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $emNormalizer = function (Options $options, $value) {
             return is_callable($value) ? $value($options) : $value;
@@ -185,7 +185,7 @@ class Select2Type extends AbstractType
         $resolver->addAllowedTypes('text_property', ['null', 'string', 'callable']);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'lifo_select2';
     }

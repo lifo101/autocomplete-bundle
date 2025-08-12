@@ -1,7 +1,7 @@
 {% block lifo_multiselect_widget %}
     {% set vue_config = config|merge({'form-name': full_name, id: id ~ '_wrapper'}) %}
     {% if errors|length %}{% set vue_config = vue_config|merge({':state': 'false'}) %}{% endif %}
-    {#    {{ dump(vue_config) }}#}
+    {#    {{ dump(vue_config) }} #}
     {% if vueVersion >= 3 %}<div class="lifo-vue-multiselect">{% endif %}
     <multiselect-ajax {% with {attr: vue_config} %}{{ block('widget_container_attributes') }}{% endwith %}>
         {# hidden field is rendered with actual value in case form is submitted before the component is created #}
@@ -17,7 +17,8 @@
         {# mock-up of Vue component to help prevent flash of no content #}
         {% if skeleton %}
             <div class="form-row">
-                <div class="col"><input type="text" class="form-control{% if size %} form-control-{{ size }}{% endif %}" /></div>
+                <div class="col"><input type="text"
+                                        class="form-control{% if size %} form-control-{{ size }}{% endif %}"/></div>
             </div>
         {% endif %}
     </multiselect-ajax>
