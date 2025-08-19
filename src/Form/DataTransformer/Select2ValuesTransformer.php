@@ -38,18 +38,18 @@ class Select2ValuesTransformer extends Select2ValueTransformer
     /**
      * @return mixed[]
      */
-    public function reverseTransform($array): array
+    public function reverseTransform(mixed $value): array
     {
-        if (!$array) {
+        if (!$value) {
             return [];
         }
 
-        if (!is_array($array)) {
-            throw new UnexpectedTypeException($array, 'array');
+        if (!is_array($value)) {
+            throw new UnexpectedTypeException($value, 'array');
         }
 
         $res = [];
-        foreach ($array as $a) {
+        foreach ($value as $a) {
             $res[] = parent::reverseTransform($a);
         }
         return $res;

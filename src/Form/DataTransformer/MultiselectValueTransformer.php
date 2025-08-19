@@ -36,12 +36,8 @@ class MultiselectValueTransformer implements DataTransformerInterface
 
     /**
      * Transform the normalized $value (the Entity or Model from the App) to an array for use in the form template.
-     *
-     * @param mixed $value
-     *
-     * @return mixed|null
      */
-    public function transform($value)
+    public function transform(mixed $value): mixed
     {
         // return as-is
         return $value;
@@ -81,12 +77,8 @@ class MultiselectValueTransformer implements DataTransformerInterface
 
     /**
      * Transform the scalar ID value back into a normalized Entity or Model for App ingestion.
-     *
-     * @param mixed $value
-     *
-     * @return mixed|null
      */
-    public function reverseTransform($value)
+    public function reverseTransform(mixed $value): mixed
     {
         if ($value === '' || $value === null) {
             return null;

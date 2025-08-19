@@ -7,22 +7,22 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 class MultiselectValuesTransformer extends MultiselectValueTransformer
 {
-    public function transform($array): array
+    public function transform(mixed $value): array
     {
-        if (!$array) {
+        if (!$value) {
             return [];
         }
 
-        if ($array instanceof Collection) {
-            $array = $array->toArray();
+        if ($value instanceof Collection) {
+            $value = $value->toArray();
         }
 
-        if (!is_array($array)) {
-            throw new UnexpectedTypeException($array, 'array');
+        if (!is_array($value)) {
+            throw new UnexpectedTypeException($value, 'array');
         }
 
         $return = [];
-        foreach ($array as $entity) {
+        foreach ($value as $entity) {
             $value = parent::transform($entity);
             if ($value !== null) {
                 $return[] = $value;
@@ -32,18 +32,18 @@ class MultiselectValuesTransformer extends MultiselectValueTransformer
     }
 
 
-    public function reverseTransform($array): array
+    public function reverseTransform(mixed $value): array
     {
-        if (!$array) {
+        if (!$value) {
             return [];
         }
 
-        if (!is_array($array)) {
-            throw new UnexpectedTypeException($array, 'array');
+        if (!is_array($value)) {
+            throw new UnexpectedTypeException($value, 'array');
         }
 
         $res = [];
-        foreach ($array as $a) {
+        foreach ($value as $a) {
             $res[] = parent::reverseTransform($a);
         }
         return $res;

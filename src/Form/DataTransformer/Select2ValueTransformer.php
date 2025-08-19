@@ -38,19 +38,15 @@ class Select2ValueTransformer implements DataTransformerInterface
 
     /**
      * Transform the normalized $value (the Entity or Model from the App) to an array for use in the form template.
-     *
-     * @param mixed $value
-     *
-     * @return mixed|null
      */
-    public function transform($value)
+    public function transform(mixed $value): mixed
     {
         if ($value === '' || $value === null) {
             return null;
         }
 
         // return the value as-is if its from a plain 'choices' list and not an Entity
-        if ($this->choices && is_array($value) && array_search($value, $this->choices, true) !== false) {
+        if ($this->choices && is_array($value) && in_array($value, $this->choices, true)) {
             return $value;
         }
 
@@ -81,12 +77,8 @@ class Select2ValueTransformer implements DataTransformerInterface
 
     /**
      * Transform the scalar ID value back into a normalized Entity or Model for App ingestion.
-     *
-     * @param mixed $value
-     *
-     * @return mixed|null
      */
-    public function reverseTransform($value)
+    public function reverseTransform(mixed $value): mixed
     {
         if ($value === '' || $value === null) {
             return null;

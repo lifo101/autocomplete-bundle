@@ -13,7 +13,7 @@ class Select2ChoicesTransformer implements DataTransformerInterface
         $this->choices = $choices;
     }
 
-    public function transform($value)
+    public function transform(mixed $value): mixed
     {
         // return the choice array element for the value given
         if ($this->choices && $value !== null) {
@@ -23,7 +23,7 @@ class Select2ChoicesTransformer implements DataTransformerInterface
         return $value;
     }
 
-    public function reverseTransform($value)
+    public function reverseTransform(mixed $value): mixed
     {
         // return the ID for the model
         if (is_array($value) && $this->choices) {
